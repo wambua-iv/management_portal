@@ -8,7 +8,7 @@ const unitsModel = new unitsSchema(
             firstName: { type : String, required : true },
             lastName: { type : String, required : true },
                 },
-        user_id: {type: String, required: true},
+        user_Id: {type: String, required: true},
         units: [{
                 name: String,
                 status : String
@@ -19,4 +19,4 @@ const unitsModel = new unitsSchema(
     }
 )
 
-export const Units = mongoose.models.Units_1 || mongoose.model('Units_1', unitsModel);
+export const Units = mongoose.models.Units_2 || mongoose.model('Units_2', unitsModel);

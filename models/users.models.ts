@@ -9,7 +9,7 @@ const usersModel = new userSchema(
             firstName: { type : String, required : true },
             lastName: { type : String, required : true },
                 },
-        user_id: {type: String, required: true},
+        user_Id: {type: String, required: true, unique: true},
         email: { type: String, unique: true },
         password: { type: String, required: true, minlength: 8 },
         accountType: { type: String }, //student, Lecturer, Admin
@@ -20,7 +20,7 @@ const usersModel = new userSchema(
     }
 )
 
-export const Users = mongoose.models.Users_1 || mongoose.model('Users_1', usersModel);
+export const Users = mongoose.models.Users_2 || mongoose.model('Users_2', usersModel);
 
 const validate = (User: any) => {
   const schema = Joi.object({
