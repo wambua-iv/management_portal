@@ -1,5 +1,5 @@
 import express from 'express';
-import { Users } from '../../../models/models';
+import { Users } from '../../../models';
 import bcrypt from 'bcrypt';
 
 const Auth_Router = express.Router()
@@ -7,7 +7,7 @@ const Auth_Router = express.Router()
 
 Auth_Router.route("/login").get((req, res) => {
     const searchParam = req.body.national_Id;
-	res.json("here we go")
+    res.json("here we go")
     // Users.findOne({ national_Id: searchParam })
     //     .then(async (user) => {
     //         if (user) {
@@ -28,20 +28,18 @@ Auth_Router.route("/login").get((req, res) => {
 });
 
 Auth_Router.route("/register").post(async (req, res) => {
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-    const user_Id = req.body.user_Id
-    const password = await bcrypt.hash(req.body.password, 12);
+    const user = new Users({
+        names: {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+        },
+        user_Id: req.body.user_Id,
+        email: req.body.email,
+        password: await bcrypt.hash(req.body.password, 12),
+        accountType: "user",
+    })
 
-    let newUser = new Users({
-        firstName,
-        lastName,
-        user_Id,
-        password,
-        account_Type: "user",
-    });
-
-    newUser
+    user
         .save()
         .then((user: any) => res.json("user Registered" + user))
         .catch((e: Error) => res.json("Error " + e));
@@ -51,4 +49,4 @@ Auth_Router.route("/logout").get((req, res) => {
     res.json({ accessToken: null, currentUser: null });
 });
 
-export {Auth_Router};
+export { Auth_Router };
