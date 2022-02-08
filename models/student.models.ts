@@ -1,6 +1,41 @@
 import mongoose from 'mongoose';
-const studentSchema = mongoose.Schema
+const studentSchema = mongoose.Schema;
+const semesterSchema = mongoose.Schema;
+const unitsSchema = mongoose.Schema;
+const feeSchema = mongoose.Schema;
+const paymentsSchena = mongoose.Schema;
 
+const unitsModel = new unitsSchema(
+    {
+        name: String,
+        results: {
+            marks: String,
+            grade: String,
+            status: String
+        }
+    }
+);
+
+
+const semesterModel = new semesterSchema({
+        semester: String,
+        status: String,
+        started: Date,
+        units: [unitsModel]
+    });
+
+
+const feeModel = new feeSchema({
+            semester: String,
+            paymentMode: String,
+            amout: Number,
+            balance: Number
+});
+const paymentModel = new paymentsSchena({
+        nameOfPayment: String,
+        paymentMode: String,
+        amout: Number
+})
 
 const studentModel = new studentSchema(
     {
@@ -13,39 +48,19 @@ const studentModel = new studentSchema(
         password: { type: String, required: true, minlength: 8 },
         accountType: { type: String }, //student, Lecturer, Admin
         verified: { type: Boolean, default: false },
-        semesters: [{
-            semester_title: String,
-            status: String,
-            started: Date,
-            units: [{
-                name: String,
-                status: String,
-                results: {
-                    marks: String,
-                    grade: String,
-                    status: String
-                }
-            }]
-        }],
+        semesters: [semesterModel],
         hostels: {
             hostel: String,
             request: { type: Number, max: 1 },
             registered: { type: Boolean, default: false },
             status: String,
         },
-        fees: {
-            paymentMode: String,
-            Amoout: Number,
-        },
-        otherPayments: {
-            nameOfPayment: String,
-            paymentMode: String,
-            Amout: Number
-        }
+        fees: [feeModel],
+        otherPayments:  [paymentModel]
     },
     {
         timestamps: true
     }
 )
 
-export const Students = mongoose.models.students_3 || mongoose.model('students_3', studentModel);
+export const Students = mongoose.models.students_5 || mongoose.model('students_5', studentModel);
