@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import {Auth_Router} from './user_routes/index'
 import { Student_Router } from './students';
+import { adminRouter } from './adminstration';
 
 export const app = express();
 
@@ -14,9 +15,10 @@ app.get('/users', (req, res)=>{
 })
 
 app.use('/auth', Auth_Router);
-app.use('/student', Student_Router)
+app.use('/student', Student_Router);
+app.use('/admin', adminRouter);
 
 
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 8082;
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
