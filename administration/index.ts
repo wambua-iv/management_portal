@@ -1,3 +1,4 @@
+import { elementAcceptingRef } from '@mui/utils';
 import { Students } from '../models';
 import { Users } from '../models';
 
@@ -36,49 +37,30 @@ export const userVerification = async (user_Id: String, accountType: String) => 
         )
 
         .catch((e: any) => { throw new Error(e) })
-
-
-
 };
 
 
 export const viewUsers = async () => {
-    const userAcc = {}
-    await Users.find()
-        .then(user => Object.assign(userAcc, { data: user }))
+    const userAcc = await Users.find()
     return userAcc;
 };
 
 
 export const viewStudents = async () => {
-    const userAcc = {}
-    await Students.find()
-        .then(user => Object.assign(userAcc, { data: user }))
+    const userAcc = await Students.find()
     return userAcc;
 };
 
 
-
-
-export const ViewRegisteredUnits = async () => {
-    const units = {}
-
-    await Students.find()
-        .then((data: any) => {
-            data.forEach((element: any) => (
-                element.semesters.forEach(async (elem: any) => {
-                    if (elem.status == 'pending' || 'active') {
-                        console.log(element)
-                        Object.assign(units, {
-                            names: element.names,
-                            semesters: element.semesters,
-                            user_Id: element.user_Id
-                        })
-                    }
-                })
-            ))
-        })
+export const ViewRegisteredUnits = async (semester: String) => {
+    const units = await Students.find({ "semesters": { "$elemMatch": { "semester": semester } } })
+        .then((data: any) => data.map((el: any) => ({
+            names: el.names, user_Id:
+                el.user_Id,
+            semester: (el.semesters.filter((elem: any) => elem.semester == semester))
+        })))
         .catch((e: any) => { throw new Error(e) });
+    console.log(units)
     return units;
 };
 
@@ -89,8 +71,8 @@ export const updateSemesterStatus = async (semesterData: any) => {
                 if (elem.semesters?.status == 'pending') {
                     console.log(data)
                     await Students.updateOne({ semesters: { semester_title: semesterData.title } },
-                        { $set: { semesters: { status: semesterData.status } } } 
-                        ).then(sem => console.log(sem))
+                        { $set: { semesters: { status: semesterData.status } } }
+                    ).then(sem => console.log(sem))
                         .catch((e: any) => { throw new Error(e) });
                 }
             })
@@ -98,6 +80,46 @@ export const updateSemesterStatus = async (semesterData: any) => {
 };
 
 
-export const updateUnitsStatus = async () => {
+export const viewPayments = async (paymentType: String) => {
+    const feeDetails = await Students.find({ "fees": { "$elemMatch": { "status": 'pending'} } })
+        .then((data: any) => data.filter((elem: any) => elem.fees.length > 0 ? data : "fee"))
+        .then((data: any) => data.map((el: any) => ({
+            names: el.names, user_Id:
+                el.user_Id,
+            fees : el.fees
+        })))
+
+    const otherPayments = await Students.find({ "otherPayments": { "$elemMatch": { "status": 'pending' } } })
+        .then((data: any) => data.map((elem: any) => elem.otherPayments.length > 0 ? data : "ther"));
+
+    return paymentType == 'fees' ? feeDetails : otherPayments;
+};
+
+
+export const verifyFeePayment = async (paymentData: any) => {
+    await Students.findOne({ user_Id: paymentData.user_Id })
+        .then((data: any) => {
+            const payment = data.fees.filter((elem: any) => elem.semester == paymentData.semester)[0];
+            console.log(payment)
+            payment.status = paymentData.status;
+            return data.save()
+        })
+        .catch((e: any) => console.log(e))
+};
+
+
+export const verifyOtherPayment = async (paymentData: any) => {
+    await Students.findOne({ user_Id: paymentData.user_Id })
+        .then((data: any) => {
+            const payment = data.otherPayments.map((elem: any) => elem.nameOfPayment == paymentData.name ? elem : null)[0];
+            console.log(payment)
+            payment.status = paymentData.status;
+            //payment.balance = Number(paymentData.expected - payment.amount);
+            return data.save()
+        })
+        .catch((e: any) => console.log(e))
+};
+
+export const verifyResults = async (user_Id: String) => {
 
 };
