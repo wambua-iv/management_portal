@@ -6,6 +6,7 @@ const feeSchema = mongoose.Schema;
 const paymentsSchena = mongoose.Schema;
 
 const unitsModel = new unitsSchema(
+    //update model to bring status outside results
     {
         name: String,
         results: {
@@ -28,13 +29,15 @@ const semesterModel = new semesterSchema({
 const feeModel = new feeSchema({
             semester: String,
             paymentMode: String,
-            amout: Number,
-            balance: Number
+            amount: Number,
+            balance: Number,
+            status: String
 });
 const paymentModel = new paymentsSchena({
         nameOfPayment: String,
         paymentMode: String,
-        amout: Number
+        amout: Number,
+        status: String
 })
 
 const studentModel = new studentSchema(
@@ -63,4 +66,4 @@ const studentModel = new studentSchema(
     }
 )
 
-export const Students = mongoose.models.students_5 || mongoose.model('students_5', studentModel);
+export const Students = mongoose.models.students_6 || mongoose.model('students_6', studentModel);
